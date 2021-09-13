@@ -1,25 +1,28 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect } from "react";
+import ApexCharts from "./apexcharts.js";
+
+const options = {
+  chart: {
+    type: "bar",
+  },
+  series: [
+    {
+      name: "sales",
+      data: [30, 40, 35, 50, 49, 60, 70, 91, 125],
+    },
+  ],
+  xaxis: {
+    categories: [1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999],
+  },
+};
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+  useEffect(() => {
+    const chart = new ApexCharts(document.querySelector("#chart"), options);
+    chart.render();
+  });
+
+  return <div id="chart"></div>;
 }
 
 export default App;

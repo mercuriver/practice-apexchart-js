@@ -9,6 +9,12 @@
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-scripts": "4.0.3",
+    "svg.draggable.js": "^3.0.0",
+    "svg.easing.js": "^2.0.0",
+    "svg.filter.js": "^2.0.2",
+    "svg.pathmorphing.js": "^0.1.3",
+    "svg.resize.js": "^1.4.3",
+    "svg.select.js": "^3.0.1",
     "web-vitals": "^1.1.2"
   },
   "scripts": {

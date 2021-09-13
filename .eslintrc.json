@@ -1,0 +1,23 @@
+{
+  "env": {
+    "browser": true,
+    "es2021": true
+  },
+  "parserOptions": {
+    "ecmaFeatures": {
+      "jsx": true
+    },
+    "ecmaVersion": 12,
+    "sourceType": "module"
+  },
+  "rules": {
+    "import/extensions": "off",
+    "no-restricted-syntax": "off",
+    "no-param-reassign": "off",
+    "import/prefer-default-export": "off",
+    "react/require-default-props": "off",
+    "no-underscore-dangle": "off",
+    "react/prefer-stateless-function": "off",
+    "react/display-name": "off"
+  }
+}
