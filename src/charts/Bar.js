@@ -18,6 +18,8 @@ class Bar {
     const w = this.w
     this.barOptions = w.config.plotOptions.bar
 
+		this.width = 0
+
     this.isHorizontal = this.barOptions.horizontal
     this.strokeWidth = w.config.stroke.width
     this.isNullValue = false
