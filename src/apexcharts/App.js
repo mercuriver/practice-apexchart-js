@@ -1,6 +1,5 @@
 import React, { useEffect, useRef } from "react";
-// import ApexCharts from "./apexcharts";
-import ApexCharts from "./react-apexcharts";
+import ApexCharts from "./react-wrapper";
 
 const githubdata = {
 	series: [
