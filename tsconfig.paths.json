@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+      "@carbon/charts": ["src/carbonCharts/core"]
+    }
+  }
+}

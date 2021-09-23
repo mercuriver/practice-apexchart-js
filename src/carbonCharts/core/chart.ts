@@ -1,250 +1,238 @@
+// @ts-nocheck
 // Internal Imports
 import {
-	ChartConfig,
-	BaseChartOptions,
-	LayoutGrowth,
-	LayoutDirection,
-	LegendOrientations,
-	Events as ChartEvents,
-	RenderTypes,
-} from './interfaces';
+  ChartConfig,
+  BaseChartOptions,
+  LayoutGrowth,
+  LayoutDirection,
+  LegendOrientations,
+  Events as ChartEvents,
+  RenderTypes,
+} from "./interfaces";
 
 // Misc
-import { ChartModel } from './model/model';
+import { ChartModel } from "./model/model";
 import {
-	Component,
-	Modal,
-	Title,
-	Legend,
-	LayoutComponent,
-	Tooltip,
-	Spacer,
-	CanvasChartClip,
-} from './components';
-import { Tools } from './tools';
+  Component,
+  Modal,
+  Title,
+  Legend,
+  LayoutComponent,
+  Tooltip,
+  Spacer,
+  CanvasChartClip,
+} from "./components";
+import { Tools } from "./tools";
 
 // Services
 import {
-	CanvasZoom,
-	DOMUtils,
-	Events,
-	Files,
-	GradientUtils,
-	Transitions,
-} from './services/index';
+  CanvasZoom,
+  DOMUtils,
+  Events,
+  Files,
+  GradientUtils,
+  Transitions,
+} from "./services/index";
 
 export class Chart {
-	components: Component[];
-	services: any = {
-		domUtils: DOMUtils,
-		files: Files,
-		events: Events,
-		gradientUtils: GradientUtils,
-		transitions: Transitions,
-		canvasZoom: CanvasZoom,
-	};
-	model: ChartModel = new ChartModel(this.services);
+  components: Component[];
+  services: any = {
+    domUtils: DOMUtils,
+    files: Files,
+    events: Events,
+    gradientUtils: GradientUtils,
+    transitions: Transitions,
+    canvasZoom: CanvasZoom,
+  };
+  model: ChartModel = new ChartModel(this.services);
 
-	constructor(holder: Element, chartConfigs: ChartConfig<BaseChartOptions>) {}
+  constructor(holder: Element, chartConfigs: ChartConfig<BaseChartOptions>) {}
 
-	// Contains the code that uses properties that are overridable by the super-class
-	init(holder: Element, chartConfigs: ChartConfig<BaseChartOptions>) {
-		// Store the holder in the model
-		this.model.set({ holder }, { skipUpdate: true });
+  // Contains the code that uses properties that are overridable by the super-class
+  init(holder: Element, chartConfigs: ChartConfig<BaseChartOptions>) {
+    // Store the holder in the model
+    this.model.set({ holder }, { skipUpdate: true });
 
-		// Initialize all services
-		Object.keys(this.services).forEach((serviceName) => {
-			const serviceObj = this.services[serviceName];
-			this.services[serviceName] = new serviceObj(
-				this.model,
-				this.services
-			);
-		});
+    // Initialize all services
+    Object.keys(this.services).forEach((serviceName) => {
+      const serviceObj = this.services[serviceName];
+      this.services[serviceName] = new serviceObj(this.model, this.services);
+    });
 
-		// Call update() when model has been updated
-		this.services.events.addEventListener(ChartEvents.Model.UPDATE, (e) => {
-			const animate = !!Tools.getProperty(e, 'detail', 'animate');
-			this.update(animate);
-		});
+    // Call update() when model has been updated
+    this.services.events.addEventListener(ChartEvents.Model.UPDATE, (e) => {
+      const animate = !!Tools.getProperty(e, "detail", "animate");
+      this.update(animate);
+    });
 
-		// Set model data & options
-		this.model.setData(chartConfigs.data);
+    // Set model data & options
+    this.model.setData(chartConfigs.data);
 
-		// Set chart resize event listener
-		this.services.events.addEventListener(ChartEvents.Chart.RESIZE, () => {
-			this.update(false);
-		});
+    // Set chart resize event listener
+    this.services.events.addEventListener(ChartEvents.Chart.RESIZE, () => {
+      this.update(false);
+    });
 
-		this.components = this.getComponents();
+    this.components = this.getComponents();
 
-		this.update();
-	}
+    this.update();
+  }
 
-	getComponents(): any[] {
-		console.error('getComponents() method is not implemented');
+  getComponents(): any[] {
+    console.error("getComponents() method is not implemented");
 
-		return null;
-	}
+    return null;
+  }
 
-	update(animate = true) {
-		if (!this.components) {
-			return;
-		}
+  update(animate = true) {
+    if (!this.components) {
+      return;
+    }
 
-		// Update all services
-		Object.keys(this.services).forEach((serviceName) => {
-			const serviceObj = this.services[serviceName];
-			serviceObj.update();
-		});
+    // Update all services
+    Object.keys(this.services).forEach((serviceName) => {
+      const serviceObj = this.services[serviceName];
+      serviceObj.update();
+    });
 
-		// Render all components
-		this.components.forEach((component) => component.render(animate));
+    // Render all components
+    this.components.forEach((component) => component.render(animate));
 
-		// Asynchronously dispatch a "render-finished" event
-		// This is needed because of d3-transitions
-		// Since at the start of the transition
-		// Elements do not hold their final size or position
-		const pendingTransitions = this.services.transitions.getPendingTransitions();
-		const promises = Object.keys(pendingTransitions).map((transitionID) => {
-			const transition = pendingTransitions[transitionID];
-			return transition.end().catch((e) => e); // Skip rejects since we don't care about those;
-		});
+    // Asynchronously dispatch a "render-finished" event
+    // This is needed because of d3-transitions
+    // Since at the start of the transition
+    // Elements do not hold their final size or position
+    const pendingTransitions =
+      this.services.transitions.getPendingTransitions();
+    const promises = Object.keys(pendingTransitions).map((transitionID) => {
+      const transition = pendingTransitions[transitionID];
+      return transition.end().catch((e) => e); // Skip rejects since we don't care about those;
+    });
 
-		Promise.all(promises).then(() =>
-			this.services.events.dispatchEvent(
-				ChartEvents.Chart.RENDER_FINISHED
-			)
-		);
-	}
+    Promise.all(promises).then(() =>
+      this.services.events.dispatchEvent(ChartEvents.Chart.RENDER_FINISHED)
+    );
+  }
 
-	destroy() {
-		// Call the destroy() method on all components
-		this.components.forEach((component) => component.destroy());
+  destroy() {
+    // Call the destroy() method on all components
+    this.components.forEach((component) => component.destroy());
 
-		// Remove the chart holder
-		this.services.domUtils.getHolder().remove();
+    // Remove the chart holder
+    this.services.domUtils.getHolder().remove();
 
-		this.model.set({ destroyed: true }, { skipUpdate: true });
-	}
+    this.model.set({ destroyed: true }, { skipUpdate: true });
+  }
 
-	protected getChartComponents(
-		graphFrameComponents: any[],
-		configs?: object
-	) {
-		const titleComponent = {
-			id: 'title',
-			components: [new Title(this.model, this.services)],
-			growth: LayoutGrowth.PREFERRED,
-		};
+  protected getChartComponents(graphFrameComponents: any[], configs?: object) {
+    const titleComponent = {
+      id: "title",
+      components: [new Title(this.model, this.services)],
+      growth: LayoutGrowth.PREFERRED,
+    };
 
-		const legendComponent = {
-			id: 'legend',
-			components: [new Legend(this.model, this.services)],
-			growth: LayoutGrowth.PREFERRED,
-		};
+    const legendComponent = {
+      id: "legend",
+      components: [new Legend(this.model, this.services)],
+      growth: LayoutGrowth.PREFERRED,
+    };
 
-		// if canvas zoom is enabled
-		const isZoomEnabled = Tools.getProperty(
-			this.model.getOptions(),
-			'canvasZoom',
-			'enabled'
-		);
+    // if canvas zoom is enabled
+    const isZoomEnabled = Tools.getProperty(
+      this.model.getOptions(),
+      "canvasZoom",
+      "enabled"
+    );
 
-		if (isZoomEnabled && isZoomEnabled === true) {
-			graphFrameComponents.push(
-				new CanvasChartClip(this.model, this.services)
-			);
-		}
+    if (isZoomEnabled && isZoomEnabled === true) {
+      graphFrameComponents.push(new CanvasChartClip(this.model, this.services));
+    }
 
-		const graphFrameComponent = {
-			id: 'graph-frame',
-			components: graphFrameComponents,
-			growth: LayoutGrowth.STRETCH,
-			renderType: Tools.getProperty(configs, 'graphFrameRenderType') || RenderTypes.SVG,
-		};
+    const graphFrameComponent = {
+      id: "graph-frame",
+      components: graphFrameComponents,
+      growth: LayoutGrowth.STRETCH,
+      renderType:
+        Tools.getProperty(configs, "graphFrameRenderType") || RenderTypes.SVG,
+    };
 
-		const isLegendEnabled =
-			Tools.getProperty(configs, 'excludeLegend') !== true &&
-			this.model.getOptions().legend.enabled !== false;
-		// TODORF - REUSE BETWEEN AXISCHART & CHART
-		// Decide the position of the legend in reference to the chart
-		let fullFrameComponentDirection = LayoutDirection.COLUMN;
-		if (isLegendEnabled) {
-			const legendPosition = Tools.getProperty(
-				this.model.getOptions(),
-				'legend',
-				'position'
-			);
-			if (legendPosition === 'left') {
-				fullFrameComponentDirection = LayoutDirection.ROW;
+    const isLegendEnabled =
+      Tools.getProperty(configs, "excludeLegend") !== true &&
+      this.model.getOptions().legend.enabled !== false;
+    // TODORF - REUSE BETWEEN AXISCHART & CHART
+    // Decide the position of the legend in reference to the chart
+    let fullFrameComponentDirection = LayoutDirection.COLUMN;
+    if (isLegendEnabled) {
+      const legendPosition = Tools.getProperty(
+        this.model.getOptions(),
+        "legend",
+        "position"
+      );
+      if (legendPosition === "left") {
+        fullFrameComponentDirection = LayoutDirection.ROW;
 
-				if (!this.model.getOptions().legend.orientation) {
-					this.model.getOptions().legend.orientation =
-						LegendOrientations.VERTICAL;
-				}
-			} else if (legendPosition === 'right') {
-				fullFrameComponentDirection = LayoutDirection.ROW_REVERSE;
+        if (!this.model.getOptions().legend.orientation) {
+          this.model.getOptions().legend.orientation =
+            LegendOrientations.VERTICAL;
+        }
+      } else if (legendPosition === "right") {
+        fullFrameComponentDirection = LayoutDirection.ROW_REVERSE;
 
-				if (!this.model.getOptions().legend.orientation) {
-					this.model.getOptions().legend.orientation =
-						LegendOrientations.VERTICAL;
-				}
-			} else if (legendPosition === 'bottom') {
-				fullFrameComponentDirection = LayoutDirection.COLUMN_REVERSE;
-			}
-		}
+        if (!this.model.getOptions().legend.orientation) {
+          this.model.getOptions().legend.orientation =
+            LegendOrientations.VERTICAL;
+        }
+      } else if (legendPosition === "bottom") {
+        fullFrameComponentDirection = LayoutDirection.COLUMN_REVERSE;
+      }
+    }
 
-		const legendSpacerComponent = {
-			id: 'spacer',
-			components: [new Spacer(this.model, this.services)],
-			growth: LayoutGrowth.PREFERRED,
-		};
+    const legendSpacerComponent = {
+      id: "spacer",
+      components: [new Spacer(this.model, this.services)],
+      growth: LayoutGrowth.PREFERRED,
+    };
 
-		const fullFrameComponent = {
-			id: 'full-frame',
-			components: [
-				new LayoutComponent(
-					this.model,
-					this.services,
-					[
-						...(isLegendEnabled ? [legendComponent] : []),
-						...(isLegendEnabled ? [legendSpacerComponent] : []),
-						graphFrameComponent,
-					],
-					{
-						direction: fullFrameComponentDirection,
-					}
-				),
-			],
-			growth: LayoutGrowth.STRETCH,
-		};
+    const fullFrameComponent = {
+      id: "full-frame",
+      components: [
+        new LayoutComponent(
+          this.model,
+          this.services,
+          [
+            ...(isLegendEnabled ? [legendComponent] : []),
+            ...(isLegendEnabled ? [legendSpacerComponent] : []),
+            graphFrameComponent,
+          ],
+          {
+            direction: fullFrameComponentDirection,
+          }
+        ),
+      ],
+      growth: LayoutGrowth.STRETCH,
+    };
 
-		// Add chart title if it exists
-		const topLevelLayoutComponents = [];
-		if (this.model.getOptions().title) {
-			topLevelLayoutComponents.push(titleComponent);
+    // Add chart title if it exists
+    const topLevelLayoutComponents = [];
+    if (this.model.getOptions().title) {
+      topLevelLayoutComponents.push(titleComponent);
 
-			const titleSpacerComponent = {
-				id: 'spacer',
-				components: [new Spacer(this.model, this.services)],
-				growth: LayoutGrowth.PREFERRED,
-			};
+      const titleSpacerComponent = {
+        id: "spacer",
+        components: [new Spacer(this.model, this.services)],
+        growth: LayoutGrowth.PREFERRED,
+      };
 
-			topLevelLayoutComponents.push(titleSpacerComponent);
-		}
-		topLevelLayoutComponents.push(fullFrameComponent);
+      topLevelLayoutComponents.push(titleSpacerComponent);
+    }
+    topLevelLayoutComponents.push(fullFrameComponent);
 
-		return [
-			new Tooltip(this.model, this.services),
-			new Modal(this.model, this.services),
-			new LayoutComponent(
-				this.model,
-				this.services,
-				topLevelLayoutComponents,
-				{
-					direction: LayoutDirection.COLUMN,
-				}
-			),
-		];
-	}
+    return [
+      new Tooltip(this.model, this.services),
+      new Modal(this.model, this.services),
+      new LayoutComponent(this.model, this.services, topLevelLayoutComponents, {
+        direction: LayoutDirection.COLUMN,
+      }),
+    ];
+  }
 }

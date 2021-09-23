@@ -1,4 +1,5 @@
-import { path as d3Path } from 'd3-path';
+// @ts-nocheck
+import { path as d3Path } from "d3-path";
 
 /**
  * Returns a path string for a straight path
@@ -11,17 +12,17 @@ import { path as d3Path } from 'd3-path';
  * @return {String} The path string
  */
 const buildStraightPathString = (source, target) => {
-	const sx = source.x;
-	const sy = source.y;
-	const tx = target.x;
-	const ty = target.y;
+  const sx = source.x;
+  const sy = source.y;
+  const tx = target.x;
+  const ty = target.y;
 
-	const path = d3Path();
+  const path = d3Path();
 
-	path.moveTo(sx, sy);
-	path.lineTo(tx, ty);
+  path.moveTo(sx, sy);
+  path.lineTo(tx, ty);
 
-	return path.toString();
+  return path.toString();
 };
 
 /**
@@ -36,19 +37,19 @@ const buildStraightPathString = (source, target) => {
  * @return {String} The path string
  */
 const buildElbowPathString = (source, target, percent = 0.5) => {
-	const sx = source.x;
-	const sy = source.y;
-	const tx = target.x;
-	const ty = target.y;
+  const sx = source.x;
+  const sy = source.y;
+  const tx = target.x;
+  const ty = target.y;
 
-	const path = d3Path();
+  const path = d3Path();
 
-	path.moveTo(sx, sy);
-	path.lineTo(sx + (tx - sx) * percent, sy);
-	path.lineTo(sx + (tx - sx) * percent, ty);
-	path.lineTo(tx, ty);
+  path.moveTo(sx, sy);
+  path.lineTo(sx + (tx - sx) * percent, sy);
+  path.lineTo(sx + (tx - sx) * percent, ty);
+  path.lineTo(tx, ty);
 
-	return path.toString();
+  return path.toString();
 };
 
 /**
@@ -66,17 +67,17 @@ const buildElbowPathString = (source, target, percent = 0.5) => {
  * @return {String} The path string
  */
 const buildBezierPathString = (source, target, cpx1, cpy1, cpx2, cpy2) => {
-	const sx = source.x;
-	const sy = source.y;
-	const tx = target.x;
-	const ty = target.y;
+  const sx = source.x;
+  const sy = source.y;
+  const tx = target.x;
+  const ty = target.y;
 
-	const path = d3Path();
+  const path = d3Path();
 
-	path.moveTo(sx, sy);
-	path.bezierCurveTo(cpx1, cpy1, cpx2, cpy2, tx, ty);
+  path.moveTo(sx, sy);
+  path.bezierCurveTo(cpx1, cpy1, cpx2, cpy2, tx, ty);
 
-	return path.toString();
+  return path.toString();
 };
 
 export { buildStraightPathString, buildElbowPathString, buildBezierPathString };

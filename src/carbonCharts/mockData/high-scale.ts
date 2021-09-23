@@ -1,7 +1,8 @@
-import { addZoomBarToOptions } from './zoom-bar';
-import * as lineChart from './line';
+// @ts-nocheck
+import { addZoomBarToOptions } from "./zoom-bar";
+import * as lineChart from "./line";
 
 export const zoomBarHighScaleLineTimeSeriesOptions = addZoomBarToOptions(
-	Object.assign({ highScale: true }, lineChart.lineTimeSeriesOptions)
+  Object.assign({ highScale: true }, lineChart.lineTimeSeriesOptions)
 );
-zoomBarHighScaleLineTimeSeriesOptions['title'] = 'High scale (zoom bar)';
+zoomBarHighScaleLineTimeSeriesOptions["title"] = "High scale (zoom bar)";

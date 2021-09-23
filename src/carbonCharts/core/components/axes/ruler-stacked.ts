@@ -1,7 +1,8 @@
-import { Ruler } from './ruler';
+// @ts-nocheck
+import { Ruler } from "./ruler";
 
 export class StackedRuler extends Ruler {
-	formatTooltipData(tooltipData) {
-		return tooltipData.reverse();
-	}
+  formatTooltipData(tooltipData) {
+    return tooltipData.reverse();
+  }
 }

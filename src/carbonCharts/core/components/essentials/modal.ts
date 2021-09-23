@@ -1,84 +1,85 @@
-import { Component } from '../component';
-import { Tools } from '../../tools';
-import { DOMUtils } from '../../services';
-import { ChartModel } from '../../model/model';
-import { Events, ScaleTypes } from '../../interfaces';
+// @ts-nocheck
+import { Component } from "../component";
+import { Tools } from "../../tools";
+import { DOMUtils } from "../../services";
+import { ChartModel } from "../../model/model";
+import { Events, ScaleTypes } from "../../interfaces";
 
 // Carbon modal
-import { Modal as CarbonModalComponent } from 'carbon-components';
+import { Modal as CarbonModalComponent } from "carbon-components";
 
 // import the settings for the css prefix
-import settings from 'carbon-components/es/globals/js/settings';
+import settings from "carbon-components/es/globals/js/settings";
 
 // D3 Imports
-import { select } from 'd3-selection';
+import { select } from "d3-selection";
 
 // date formatting
-import { format } from 'date-fns';
+import { format } from "date-fns";
 
-import { get } from 'lodash-es';
+import { get } from "lodash-es";
 
 export class Modal extends Component {
-	type = 'modal';
+  type = "modal";
 
-	// flag for checking whether tooltip event listener is added or not
-	isEventListenerAdded = false;
-	modal: any;
+  // flag for checking whether tooltip event listener is added or not
+  isEventListenerAdded = false;
+  modal: any;
 
-	constructor(model: ChartModel, services: any, configs?: any) {
-		super(model, services, configs);
+  constructor(model: ChartModel, services: any, configs?: any) {
+    super(model, services, configs);
 
-		this.init();
-	}
+    this.init();
+  }
 
-	handleShowModal = () => {
-		this.modal.html(this.getModalHTML());
-		this.modal
-			.select('div.bx--modal-footer button.bx--btn')
-			.on('click', () => this.model.exportToCSV());
+  handleShowModal = () => {
+    this.modal.html(this.getModalHTML());
+    this.modal
+      .select("div.bx--modal-footer button.bx--btn")
+      .on("click", () => this.model.exportToCSV());
 
-		const modalInstance = CarbonModalComponent.create(this.modal.node());
-		modalInstance.show();
-	};
+    const modalInstance = CarbonModalComponent.create(this.modal.node());
+    modalInstance.show();
+  };
 
-	handleHideModal = () => {};
+  handleHideModal = () => {};
 
-	addEventListeners() {
-		// listen to show-modal Custom Events to render the modal
-		this.services.events.addEventListener(
-			Events.Modal.SHOW,
-			this.handleShowModal
-		);
+  addEventListeners() {
+    // listen to show-modal Custom Events to render the modal
+    this.services.events.addEventListener(
+      Events.Modal.SHOW,
+      this.handleShowModal
+    );
 
-		// listen to hide-modal Custom Events to hide the modal
-		this.services.events.addEventListener(
-			Events.Modal.HIDE,
-			this.handleHideModal
-		);
-	}
+    // listen to hide-modal Custom Events to hide the modal
+    this.services.events.addEventListener(
+      Events.Modal.HIDE,
+      this.handleHideModal
+    );
+  }
 
-	removeEventListeners() {
-		// remove show-modal Custom Events
-		this.services.events.removeEventListener(
-			Events.Modal.SHOW,
-			this.handleShowModal
-		);
+  removeEventListeners() {
+    // remove show-modal Custom Events
+    this.services.events.removeEventListener(
+      Events.Modal.SHOW,
+      this.handleShowModal
+    );
 
-		// remove hide-modal Custom Events
-		this.services.events.removeEventListener(
-			Events.Modal.HIDE,
-			this.handleHideModal
-		);
-	}
+    // remove hide-modal Custom Events
+    this.services.events.removeEventListener(
+      Events.Modal.HIDE,
+      this.handleHideModal
+    );
+  }
 
-	getModalHTML() {
-		const options = this.model.getOptions();
+  getModalHTML() {
+    const options = this.model.getOptions();
 
-		const chartprefix = Tools.getProperty(options, 'style', 'prefix');
+    const chartprefix = Tools.getProperty(options, "style", "prefix");
 
-		const tableArray = this.model.getTabularDataArray();
+    const tableArray = this.model.getTabularDataArray();
 
-		return `
+    return `
 		<div class="bx--modal-container">
 			<div class="bx--modal-header">
 				<p class="bx--modal-header__label bx--type-delta">Tabular representation</p>
@@ -93,23 +94,23 @@ export class Modal extends Component {
 					<thead>
 						<tr>
 							${get(tableArray, 0)
-								.map(
-									(heading) => `<th scope="col">
+                .map(
+                  (heading) => `<th scope="col">
 								<div class="bx--table-header-label">${heading}</div>
 							</th>`
-								)
-								.join('')}
+                )
+                .join("")}
 						</tr>
 					</thead>
 					<tbody>${tableArray
-						.slice(1)
-						.map(
-							(row) => `
+            .slice(1)
+            .map(
+              (row) => `
 							<tr>
-								${row.map((column) => `<td>${column}</td>`).join('')}
+								${row.map((column) => `<td>${column}</td>`).join("")}
 							</tr>`
-						)
-						.join('')}
+            )
+            .join("")}
 					</tbody>
 				</table>
 			</div>
@@ -118,35 +119,35 @@ export class Modal extends Component {
 			  <button class="bx--btn bx--btn--primary" type="button" data-modal-primary-focus>Download as CSV</button>
 			</div>
 		</div>`;
-	}
+  }
 
-	render() {
-		const options = this.model.getOptions();
-		if (!this.isEventListenerAdded) {
-			// Grab the tooltip element
-			const holder = select(this.services.domUtils.getHolder());
-			const chartprefix = Tools.getProperty(options, 'style', 'prefix');
-			this.modal = DOMUtils.appendOrSelect(
-				holder,
-				`div.${settings.prefix}--${chartprefix}--modal`
-			);
+  render() {
+    const options = this.model.getOptions();
+    if (!this.isEventListenerAdded) {
+      // Grab the tooltip element
+      const holder = select(this.services.domUtils.getHolder());
+      const chartprefix = Tools.getProperty(options, "style", "prefix");
+      this.modal = DOMUtils.appendOrSelect(
+        holder,
+        `div.${settings.prefix}--${chartprefix}--modal`
+      );
 
-			this.addEventListeners();
-			this.isEventListenerAdded = true;
-			this.modal
-				.attr('data-modal', true)
-				.attr('class', 'bx--modal')
-				.attr('role', 'dialog')
-				.attr('aria-modal', true)
-				.attr('aria-labelledby', 'modal-5ppouesvfhc-label')
-				.attr('aria-describedby', 'modal-5ppouesvfhc-heading')
-				.attr('tabindex', -1);
-		}
-	}
+      this.addEventListeners();
+      this.isEventListenerAdded = true;
+      this.modal
+        .attr("data-modal", true)
+        .attr("class", "bx--modal")
+        .attr("role", "dialog")
+        .attr("aria-modal", true)
+        .attr("aria-labelledby", "modal-5ppouesvfhc-label")
+        .attr("aria-describedby", "modal-5ppouesvfhc-heading")
+        .attr("tabindex", -1);
+    }
+  }
 
-	destroy() {
-		// remove tooltip eventListener
-		this.removeEventListeners();
-		this.isEventListenerAdded = false;
-	}
+  destroy() {
+    // remove tooltip eventListener
+    this.removeEventListeners();
+    this.isEventListenerAdded = false;
+  }
 }

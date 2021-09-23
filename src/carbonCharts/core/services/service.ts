@@ -1,27 +1,28 @@
-import { ChartModel } from '../model/model';
+// @ts-nocheck
+import { ChartModel } from "../model/model";
 
 export class Service {
-	protected model: ChartModel;
-	protected services: any;
+  protected model: ChartModel;
+  protected services: any;
 
-	constructor(model: ChartModel, services: any) {
-		this.model = model;
-		this.services = services;
+  constructor(model: ChartModel, services: any) {
+    this.model = model;
+    this.services = services;
 
-		this.init();
-	}
+    this.init();
+  }
 
-	init() {}
+  init() {}
 
-	update() {}
+  update() {}
 
-	// Used to pass down information to the components
-	setModel(newObj) {
-		this.model = newObj;
-	}
+  // Used to pass down information to the components
+  setModel(newObj) {
+    this.model = newObj;
+  }
 
-	// Used to pass down services to the components
-	setServices(newObj) {
-		this.services = newObj;
-	}
+  // Used to pass down services to the components
+  setServices(newObj) {
+    this.services = newObj;
+  }
 }
